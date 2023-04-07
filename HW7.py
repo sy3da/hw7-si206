@@ -53,7 +53,16 @@ def make_positions_table(data, cur, conn):
 #     created for you -- see make_positions_table above for details.
 
 def make_players_table(data, cur, conn):
-    pass
+    cur.execute("CREATE TABLE IF NOT EXISTS Players (id INTEGER PRIMARY KEY, name TEXT, position_id INTEGER, birthyear INTEGER, nationality TEXT)")
+    for player in data['squad']:
+        name = player['name']
+        position = player['position']
+        birthyear = player['dateOfBirth'][:4] if 'dateOfBirth' in player else None
+        nationality = player['nationality'] if 'nationality' in player else None
+        cur.execute("SELECT id FROM Positions WHERE position = ?", (position,))
+        position_id = cur.fetchone()[0] if cur.fetchone() else None
+        cur.execute("INSERT INTO Players (id, name, position_id, birthyear, nationality) VALUES (?,?,?,?,?)", (player['id'], name, position_id, birthyear, nationality))
+    conn.commit()
 
 ## [TASK 2]: 10 points
 # Finish the function nationality_search
@@ -66,7 +75,10 @@ def make_players_table(data, cur, conn):
         # the player's name, their position_id, and their nationality.
 
 def nationality_search(countries, cur, conn):
-    pass
+    placeholders = ','.join('?' for _ in countries)
+    cur.execute(f"SELECT name, position_id, nationality FROM Players WHERE nationality IN ({placeholders})", countries)
+    results = cur.fetchall()
+    return results
 
 ## [TASK 3]: 10 points
 # finish the function birthyear_nationality_search
@@ -85,7 +97,10 @@ def nationality_search(countries, cur, conn):
 
 
 def birthyear_nationality_search(age, country, cur, conn):
-    pass
+    year = 2023 - age
+    cur.execute("SELECT name, nationality, birthyear FROM Players WHERE nationality = ? AND birthyear < ?", (country, year))
+    results = cur.fetchall()
+    return results
 
 ## [TASK 4]: 15 points
 # finish the function position_birth_search
