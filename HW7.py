@@ -57,10 +57,10 @@ def make_players_table(data, cur, conn):
     for player in data['squad']:
         name = player['name']
         position = player['position']
-        birthyear = player['dateOfBirth'][:4] if 'dateOfBirth' in player else None
-        nationality = player['nationality'] if 'nationality' in player else None
+        birthyear = player['dateOfBirth'][:4] 
+        nationality = player['nationality']
         cur.execute("SELECT id FROM Positions WHERE position = ?", (position,))
-        position_id = cur.fetchone()[0] if cur.fetchone() else None
+        position_id = cur.fetchone()[0] 
         cur.execute("INSERT INTO Players (id, name, position_id, birthyear, nationality) VALUES (?,?,?,?,?)", (player['id'], name, position_id, birthyear, nationality))
     conn.commit()
 
