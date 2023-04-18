@@ -163,6 +163,7 @@ def position_birth_search(position, age, cur, conn):
 
 def make_winners_table(data, cur, conn):
     pass
+    x = 0
 
 def make_seasons_table(data, cur, conn):
     pass
